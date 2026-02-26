@@ -54,4 +54,44 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
             @Param("user") User user,
             @Param("keyword") String keyword
     );
+
+    // get all received transactions for a user within a date range
+    @Query("SELECT t FROM Transaction t WHERE t.receiver = :user " +
+            "AND t.status = 'COMPLETED' AND t.createdAt >= :startDate " +
+            "ORDER BY t.createdAt DESC")
+    List<Transaction> findReceivedAfter(
+            @Param("user") User user,
+            @Param("startDate") LocalDateTime startDate
+    );
+
+    // get total amount received by a user
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+            "WHERE t.receiver = :user AND t.status = 'COMPLETED'")
+    BigDecimal getTotalReceived(@Param("user") User user);
+
+    // get total amount sent by a user
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+            "WHERE t.sender = :user AND t.status = 'COMPLETED' " +
+            "AND t.type = 'SENT'")
+    BigDecimal getTotalSent(@Param("user") User user);
+
+    // get total received within date range
+    @Query("SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t " +
+            "WHERE t.receiver = :user AND t.status = 'COMPLETED' " +
+            "AND t.createdAt >= :startDate")
+    BigDecimal getTotalReceivedAfter(
+            @Param("user") User user,
+            @Param("startDate") LocalDateTime startDate
+    );
+
+    // get top senders to this user (top customers)
+    @Query("SELECT t.sender.fullName, t.sender.email, " +
+            "SUM(t.amount) as totalVolume, COUNT(t) as txCount " +
+            "FROM Transaction t WHERE t.receiver = :user " +
+            "AND t.status = 'COMPLETED' AND t.sender IS NOT NULL " +
+            "GROUP BY t.sender.fullName, t.sender.email " +
+            "ORDER BY totalVolume DESC")
+    List<Object[]> findTopCustomers(@Param("user") User user);
+
+
 }
