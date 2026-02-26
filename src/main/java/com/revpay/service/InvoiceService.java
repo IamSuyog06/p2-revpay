@@ -14,6 +14,7 @@ import com.revpay.exception.ResourceNotFoundException;
 import com.revpay.exception.UnauthorizedAccessException;
 import com.revpay.repository.InvoiceLineItemRepository;
 import com.revpay.repository.InvoiceRepository;
+import com.revpay.repository.UserRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,13 @@ public class InvoiceService {
 
     @Autowired
     private NotificationService notificationService;
+
+
+    private UserRepository userRepository;
+
+    public InvoiceService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     // create a new invoice
     @Transactional
@@ -120,6 +128,15 @@ public class InvoiceService {
         notificationService.sendNotification(user,
                 "Invoice #" + invoice.getId() + " sent to " + invoice.getCustomerEmail(),
                 NotificationType.INVOICE);
+
+        //notify the user
+        userRepository.findByEmail(invoice.getCustomerEmail()).ifPresent(customer ->{
+            notificationService.sendNotification(customer,
+                    user.getFullName()+" sent you an invoice of ₹"+invoice.getTotalAmount()+
+                    ". Payment terms: "+(invoice.getPaymentTerms() != null ? invoice.getPaymentTerms() : "N/A"),
+                    NotificationType.INVOICE);
+            logger.info("Invoice notification sent to customer: {}",customer.getEmail());
+        });
 
         logger.info("Invoice {} sent successfully", id);
         return toInvoiceResponse(invoice);

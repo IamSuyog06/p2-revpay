@@ -203,9 +203,12 @@ public class LoanService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private LoanApplicationResponse toLoanResponse(LoanApplication loan) {
+    public LoanApplicationResponse toLoanResponse(LoanApplication loan) {
         LoanApplicationResponse response = new LoanApplicationResponse();
         response.setId(loan.getId());
+        response.setApplicantName(loan.getUser().getFullName());
+        response.setApplicantEmail(loan.getUser().getEmail());
+        response.setDocumentPath(loan.getDocumentPath());
         response.setLoanAmount(loan.getLoanAmount());
         response.setPurpose(loan.getPurpose());
         response.setTenure(loan.getTenure());
