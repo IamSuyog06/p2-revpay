@@ -20,6 +20,9 @@ public class LoanApplicationResponse {
     private BigDecimal remainingAmount;
     private List<LoanRepaymentResponse> repayments;
     private LocalDateTime createdAt;
+    private String applicantName;
+    private String applicantEmail;
+    private String documentPath;
 
     public LoanApplicationResponse(LocalDateTime createdAt, BigDecimal emiAmount, String financialInfo, Long id, BigDecimal interestRate, BigDecimal loanAmount, String purpose, BigDecimal remainingAmount, List<LoanRepaymentResponse> repayments, String status, Integer tenure, BigDecimal totalAmountPaid) {
         this.createdAt = createdAt;
@@ -135,10 +138,34 @@ public class LoanApplicationResponse {
         this.totalAmountPaid = totalAmountPaid;
     }
 
+    public String getApplicantEmail() {
+        return applicantEmail;
+    }
+
+    public void setApplicantEmail(String applicantEmail) {
+        this.applicantEmail = applicantEmail;
+    }
+
+    public String getApplicantName() {
+        return applicantName;
+    }
+
+    public void setApplicantName(String applicantName) {
+        this.applicantName = applicantName;
+    }
+
+    public String getDocumentPath() {
+        return documentPath;
+    }
+
+    public void setDocumentPath(String documentPath) {
+        this.documentPath = documentPath;
+    }
+
     @Override
     public String toString() {
         return "LoanApplicationResponse{" +
-                "createdAt=" + createdAt +
+                "applicantEmail='" + applicantEmail + '\'' +
                 ", id=" + id +
                 ", loanAmount=" + loanAmount +
                 ", purpose='" + purpose + '\'' +
@@ -150,6 +177,9 @@ public class LoanApplicationResponse {
                 ", totalAmountPaid=" + totalAmountPaid +
                 ", remainingAmount=" + remainingAmount +
                 ", repayments=" + repayments +
+                ", createdAt=" + createdAt +
+                ", applicantName='" + applicantName + '\'' +
+                ", documentPath='" + documentPath + '\'' +
                 '}';
     }
 }
